@@ -17,7 +17,7 @@ using Activity = TraceLoggingThreadActivity<g_trace_logging_provider>;
 using TraceFunc = std::function<void(Activity&) noexcept>;
 
 struct EtwLoggingActivityWrapper {
-    EtwLoggingActivityWrapper(TraceFunc start_func, TraceFunc stop_func);
+    EtwLoggingActivityWrapper(const TraceFunc& start_func, const TraceFunc& stop_func);
     ~EtwLoggingActivityWrapper();  // NOLINT(bugprone-exception-escape)
 
     EtwLoggingActivityWrapper(EtwLoggingActivityWrapper const&) = delete;
@@ -30,7 +30,7 @@ struct EtwLoggingActivityWrapper {
     TraceFunc m_stopFunc;
 };
 
-inline EtwLoggingActivityWrapper::EtwLoggingActivityWrapper(TraceFunc start_func, TraceFunc stop_func)
+inline EtwLoggingActivityWrapper::EtwLoggingActivityWrapper(const TraceFunc& start_func, const TraceFunc& stop_func)
     : m_startFunc(std::move(start_func)), m_stopFunc(std::move(stop_func)) {
     dbg("Starting activity");
     m_startFunc(m_activity);

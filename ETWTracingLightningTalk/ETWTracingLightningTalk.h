@@ -8,9 +8,11 @@
 namespace library {
     
 static void do_the_thing() {
-    ETW_LOG_CURRENT_SCOPE("TheThing", TraceLoggingValue(42, "SomeParameter"));
+    ETW_LOG_CURRENT_SCOPE("Activity",
+		TraceLoggingValue(42, "TheAnswer"),
+		TraceLoggingValue("ThisWorks", "WithStringsToo"));
 
-    std::cout << "I did the thing!" << '\n';
+	dbg("I did the thing!");
 }
 
 }
