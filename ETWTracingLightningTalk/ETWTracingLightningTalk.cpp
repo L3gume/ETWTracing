@@ -5,10 +5,10 @@
 #include "EtwTracing.h"
 
 int main() {
-    setEtwLoggingEnabled(true);
+    trace_logging::setEtwLoggingEnabled(true);
     
-	DoTheThing();
-    
-	setEtwLoggingEnabled(false);
+    library::do_the_thing();
+
+    trace_logging::setEtwLoggingEnabled(false);
 	return 0;
 }
