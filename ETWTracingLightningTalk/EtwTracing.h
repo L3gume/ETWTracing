@@ -26,14 +26,13 @@ struct EtwLoggingActivityWrapper {
     void operator=(EtwLoggingActivityWrapper&&) = delete;
 
     Activity m_activity{};
-    TraceFunc m_startFunc;
     TraceFunc m_stopFunc;
 };
 
 inline EtwLoggingActivityWrapper::EtwLoggingActivityWrapper(const TraceFunc& start_func, const TraceFunc& stop_func)
-    : m_startFunc(std::move(start_func)), m_stopFunc(std::move(stop_func)) {
+    : m_stopFunc(stop_func) {
     dbg("Starting activity");
-    m_startFunc(m_activity);
+    start_func(m_activity);
 }
 
 inline EtwLoggingActivityWrapper::~EtwLoggingActivityWrapper() { // NOLINT(bugprone-exception-escape)
@@ -45,16 +44,15 @@ inline void setEtwLoggingEnabled(const bool enabled) {
     dbg("setEtwLoggingEnabled: ");
     if (dbg(enabled)) {
         TraceLoggingRegister(g_trace_logging_provider);
-    }
-    else {
+    } else {
         TraceLoggingUnregister(g_trace_logging_provider);
     }
 }
 
 }
 
-#define ETW_LOG_CURRENT_SCOPE(name, ...)                                                                            \
-    trace_logging::EtwLoggingActivityWrapper _etw_activity_(                                                        \
-        [&](trace_logging::Activity& act){ TraceLoggingWriteStart(act, name, __VA_ARGS__); },                       \
-        [&](trace_logging::Activity& act){ if (act.IsStarted()) TraceLoggingWriteStop(act, name, __VA_ARGS__); }    \
+#define ETW_LOG_CURRENT_SCOPE(name, ...)                                                               \
+    trace_logging::EtwLoggingActivityWrapper _etw_activity_(                                           \
+        [&](trace_logging::Activity& act){ TraceLoggingWriteStart(act, name, __VA_ARGS__); },          \
+        [&](trace_logging::Activity& act){ if (act.IsStarted()) { TraceLoggingWriteStop(act, name); }} \
     )
